@@ -1,38 +1,44 @@
 // ignore_for_file: must_be_immutable
 
-import 'package:flutter/material.dart'; // Import library dasar dari Flutter
-import 'package:flutter_easyloading/flutter_easyloading.dart'; // Import untuk menampilkan loading, error, dan sukses dengan mudah
-import 'package:get/get.dart'; // Import package GetX untuk manajemen state
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import untuk berinteraksi dengan Firestore
-import 'package:cookies_shop/controllers/category-dropdown_controller.dart'; // Import controller untuk dropdown kategori
-import 'package:cookies_shop/controllers/is-sale-controller.dart'; // Import controller untuk status sale
-import 'package:cookies_shop/models/product-model.dart'; // Import model ProductModel untuk data produk
-import 'package:cookies_shop/services/generate-ids-service.dart'; // Import service untuk menghasilkan ID produk
-import 'package:cookies_shop/utils/app-constant.dart'; // Import konstanta aplikasi seperti warna dan tema
-import 'package:cookies_shop/widgets/dropdown-categories-widget.dart'; // Import widget dropdown kategori
+import 'package:flutter/material.dart';// Import library dasar dari Flutter
+import 'package:flutter_easyloading/flutter_easyloading.dart';// Import untuk menampilkan loading, error, dan sukses dengan mudah
+import 'package:get/get.dart';// Import package GetX untuk manajemen state
+import 'package:cloud_firestore/cloud_firestore.dart';// Import untuk berinteraksi dengan Firestore
+import 'package:cookies_shop/controllers/category-dropdown_controller.dart';// Import controller untuk dropdown kategori
+import 'package:cookies_shop/controllers/is-sale-controller.dart';// Import controller untuk status sale
+import 'package:cookies_shop/models/product-model.dart';// Import model ProductModel untuk data produk
+import 'package:cookies_shop/services/generate-ids-service.dart';// Import service untuk menghasilkan ID produk
+import 'package:cookies_shop/utils/app-constant.dart';// Import konstanta aplikasi seperti warna dan tema
+import 'package:cookies_shop/widgets/dropdown-categories-widget.dart';// Import widget dropdown kategori
 
+// Deklarasi kelas AddProductScreen yang merupakan StatelessWidget
 class AddProductScreen extends StatelessWidget {
+  // Konstruktor AddProductScreen
   AddProductScreen({super.key});
 
   // Controller untuk mengontrol input dari form
   TextEditingController addProductImagesController = TextEditingController();
+  // Instance controller dropdown kategori menggunakan GetX
   CategoryDropDownController categoryDropDownController =
-      Get.put(CategoryDropDownController()); // Instance controller dropdown kategori menggunakan GetX
-  IsSaleController isSaleController = Get.put(IsSaleController()); // Instance controller status sale menggunakan GetX
+      Get.put(CategoryDropDownController());
+  // Instance controller status sale menggunakan GetX
+  IsSaleController isSaleController = Get.put(IsSaleController());
   TextEditingController productNameController = TextEditingController();
   TextEditingController salePriceController = TextEditingController();
   TextEditingController fullPriceController = TextEditingController();
   TextEditingController deliveryTimeController = TextEditingController();
   TextEditingController productDescriptionController = TextEditingController();
 
-  String errorMessage = ''; // Variabel untuk menyimpan pesan error jika validasi gagal
+  // Variabel untuk menyimpan pesan error jika validasi gagal
+  String errorMessage = '';
 
   // Method untuk mengupload data produk ke Firestore
   Future<void> _uploadProduct() async {
     // Validasi bahwa semua input terisi dengan benar sebelum mengupload
     if (_validateFields()) {
       try {
-        EasyLoading.show(); // Menampilkan loading indicator
+        // Menampilkan loading indicator
+        EasyLoading.show();
 
         // Generate ID produk yang unik menggunakan service GenerateIds
         String productId = await GenerateIds().generateProductId();
@@ -68,14 +74,18 @@ class AddProductScreen extends StatelessWidget {
             .doc(productId)
             .set(productModel.toMap());
 
-        EasyLoading.dismiss(); // Menutup loading indicator setelah berhasil
-        EasyLoading.showSuccess('Product successfully added.'); // Menampilkan pesan sukses
+        // Menutup loading indicator setelah berhasil
+        EasyLoading.dismiss();
+        // Menampilkan pesan sukses
+        EasyLoading.showSuccess('Product successfully added.');
 
       } catch (e) {
-        print("error : $e"); // Menampilkan error di console jika terjadi kesalahan
+        // Menampilkan error di console jika terjadi kesalahan
+        print("error : $e");
       }
     } else {
-      EasyLoading.showError("Please fill in all fields"); // Menampilkan pesan error jika validasi gagal
+      // Menampilkan pesan error jika validasi gagal
+      EasyLoading.showError("Please fill in all fields");
     }
   }
 
@@ -119,7 +129,8 @@ class AddProductScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: AppConstant.appScendoryColor), // Mengatur warna ikon di app bar
+        // Mengatur warna ikon di app bar
+        iconTheme: IconThemeData(color: AppConstant.appScendoryColor),
         centerTitle: true,
         title: Text(
           "Add Products", // Judul halaman
@@ -131,11 +142,13 @@ class AddProductScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(), // Efek bounce saat scrolling
+        // Efek bounce saat scrolling
+        physics: BouncingScrollPhysics(),
         child: Container(
           child: Column(
             children: [
-              DropDownCategoriesWidget(), // Widget untuk dropdown kategori
+              // Widget untuk dropdown kategori
+              DropDownCategoriesWidget(),
               // Toggle untuk isSale
               GetBuilder<IsSaleController>(
                 init: IsSaleController(),
@@ -167,15 +180,18 @@ class AddProductScreen extends StatelessWidget {
                 height: 65,
                 margin: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: TextFormField(
-                  cursorColor: AppConstant.appScendoryColor, // Warna kursor
+                  // Warna kursor
+                  cursorColor: AppConstant.appScendoryColor,
                   textInputAction: TextInputAction.next,
                   controller: productNameController,
                   decoration: const InputDecoration(
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 10.0,
                     ),
-                    labelText: "Product Name", // Label untuk input nama produk
-                    hintText: "Enter product name", // Hint untuk input nama produk
+                    // Label untuk input nama produk
+                    labelText: "Product Name",
+                    // Hint untuk input nama produk
+                    hintText: "Enter product name",
                     hintStyle: TextStyle(fontSize: 12.0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(
@@ -189,16 +205,18 @@ class AddProductScreen extends StatelessWidget {
                 height: 65,
                 margin: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: TextFormField(
-                  cursorColor: AppConstant.appScendoryColor, // Warna kursor
+                  // Warna kursor
+                  cursorColor: AppConstant.appScendoryColor,
                   textInputAction: TextInputAction.next,
                   controller: addProductImagesController,
                   decoration: const InputDecoration(
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 10.0,
                     ),
-                    labelText: "Image Product (Comma separated URLs)", // Label untuk input URL gambar produk
-                    hintText:
-                        "Enter image product URLs separated by comma", // Hint untuk input URL gambar produk
+                    // Label untuk input URL gambar produk
+                    labelText: "Image Product (Comma separated URLs)",
+                    // Hint untuk input URL gambar produk
+                    hintText: "Enter image product URLs separated by comma",
                     hintStyle: TextStyle(fontSize: 12.0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(
@@ -215,7 +233,8 @@ class AddProductScreen extends StatelessWidget {
                         height: 65,
                         margin: EdgeInsets.symmetric(horizontal: 10.0),
                         child: TextFormField(
-                          cursorColor: AppConstant.appScendoryColor, // Warna kursor
+                          // Warna kursor
+                          cursorColor: AppConstant.appScendoryColor,
                           textInputAction: TextInputAction.next,
                           controller: salePriceController,
                           keyboardType:
@@ -224,8 +243,10 @@ class AddProductScreen extends StatelessWidget {
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: 10.0,
                             ),
-                            labelText: "Sale Price", // Label untuk input sale price
-                            hintText: "Enter sale price", // Hint untuk input sale price
+                            // Label untuk input sale price
+                            labelText: "Sale Price",
+                            // Hint untuk input sale price
+                            hintText: "Enter sale price",
                             hintStyle: TextStyle(fontSize: 12.0),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.all(
@@ -241,7 +262,8 @@ class AddProductScreen extends StatelessWidget {
                 height: 65,
                 margin: EdgeInsets.symmetric(horizontal: 10.0),
                 child: TextFormField(
-                  cursorColor: AppConstant.appScendoryColor, // Warna kursor
+                  // Warna kursor
+                  cursorColor: AppConstant.appScendoryColor,
                   textInputAction: TextInputAction.next,
                   controller: fullPriceController,
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -249,8 +271,10 @@ class AddProductScreen extends StatelessWidget {
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 10.0,
                     ),
-                    labelText: "Full Price", // Label untuk input full price
-                    hintText: "Enter full price", // Hint untuk input full price
+                    // Label untuk input full price
+                    labelText: "Full Price",
+                    // Hint untuk input full price
+                    hintText: "Enter full price",
                     hintStyle: TextStyle(fontSize: 12.0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(
@@ -264,15 +288,18 @@ class AddProductScreen extends StatelessWidget {
                 height: 65,
                 margin: EdgeInsets.symmetric(horizontal: 10.0),
                 child: TextFormField(
-                  cursorColor: AppConstant.appScendoryColor, // Warna kursor
+                  // Warna kursor
+                  cursorColor: AppConstant.appScendoryColor,
                   textInputAction: TextInputAction.next,
                   controller: deliveryTimeController,
                   decoration: const InputDecoration(
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 10.0,
                     ),
-                    labelText: "Delivery time", // Label untuk input waktu pengiriman
-                    hintText: "Enter delivery time", // Hint untuk input waktu pengiriman
+                    // Label untuk input waktu pengiriman
+                    labelText: "Delivery time",
+                    // Hint untuk input waktu pengiriman
+                    hintText: "Enter delivery time",
                     hintStyle: TextStyle(fontSize: 12.0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(
@@ -286,15 +313,18 @@ class AddProductScreen extends StatelessWidget {
                 height: 65,
                 margin: EdgeInsets.symmetric(horizontal: 10.0),
                 child: TextFormField(
-                  cursorColor: AppConstant.appScendoryColor, // Warna kursor
+                  // Warna kursor
+                  cursorColor: AppConstant.appScendoryColor,
                   textInputAction: TextInputAction.next,
                   controller: productDescriptionController,
                   decoration: const InputDecoration(
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: 10.0,
                     ),
-                    labelText: "Product Description", // Label untuk input deskripsi produk
-                    hintText: "Enter product description", // Hint untuk input deskripsi produk
+                    // Label untuk input deskripsi produk
+                    labelText: "Product Description",
+                    // Hint untuk input deskripsi produk
+                    hintText: "Enter product description",
                     hintStyle: TextStyle(fontSize: 12.0),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(
@@ -307,14 +337,18 @@ class AddProductScreen extends StatelessWidget {
               SizedBox(height: 20.0), // Spacer vertikal
               // Tombol untuk mengupload produk
               ElevatedButton(
-                onPressed: _uploadProduct, // Method yang dipanggil saat tombol ditekan
+                // Method yang dipanggil saat tombol ditekan
+                onPressed: _uploadProduct,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppConstant.appScendoryColor, // Warna background tombol
-                  padding: EdgeInsets.all(20.0), // Padding tombol
+                  // Warna background tombol
+                  backgroundColor: AppConstant.appScendoryColor,
+                  // Padding tombol
+                  padding: EdgeInsets.all(20.0),
                 ),
                 child: Text(
-                  "Upload", // Text di dalam tombol
-                  style: TextStyle(color: Colors.white), // Warna teks di dalam tombol
+                  "Upload", // Teks di dalam tombol
+                  // Warna teks di dalam tombol
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ],
@@ -325,7 +359,7 @@ class AddProductScreen extends StatelessWidget {
   }
 }
 
-// Function untuk memeriksa apakah sebuah string adalah angka
+// Fungsi untuk memeriksa apakah sebuah string adalah angka
 bool isNumeric(String? str) {
   if (str == null) {
     return false;

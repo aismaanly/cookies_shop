@@ -1,21 +1,24 @@
 // ignore_for_file: file_names
 
+// Deklarasi class CartModel
 class CartModel {
-  final String productId;
-  final String categoryId;
-  final String productName;
-  final String categoryName;
-  final String salePrice;
-  final String fullPrice;
-  final List productImages;
-  final String deliveryTime;
-  final bool isSale;
-  final String productDescription;
-  final dynamic createdAt;
-  final dynamic updatedAt;
-  final int productQuantity;
-  final double productTotalPrice;
+  // Deklarasi atribut-atribut yang ada dalam CartModel
+  final String productId; // ID produk
+  final String categoryId; // ID kategori produk
+  final String productName; // Nama produk
+  final String categoryName; // Nama kategori produk
+  final String salePrice; // Harga setelah diskon produk
+  final String fullPrice; // Harga full produk
+  final List productImages; // Daftar gambar produk
+  final String deliveryTime; // Waktu pengiriman produk
+  final bool isSale; // Status apakah produk sedang diskon
+  final String productDescription; // Deskripsi produk
+  final dynamic createdAt; // Waktu pembuatan data (tipe dinamis)
+  final dynamic updatedAt; // Waktu pembaruan data (tipe dinamis)
+  final int productQuantity; // Jumlah produk dalam keranjang
+  final double productTotalPrice; // Total harga produk dalam keranjang
 
+  // Konstruktor untuk menginisialisasi semua atribut
   CartModel({
     required this.productId,
     required this.categoryId,
@@ -33,6 +36,7 @@ class CartModel {
     required this.productTotalPrice,
   });
 
+  // Fungsi untuk mengonversi objek CartModel menjadi Map (format key-value)
   Map<String, dynamic> toMap() {
     return {
       'productId': productId,
@@ -52,6 +56,7 @@ class CartModel {
     };
   }
 
+  // Factory constructor untuk membuat objek CartModel dari Map
   factory CartModel.fromMap(Map<String, dynamic> json) {
     return CartModel(
       productId: json['productId'],
@@ -60,7 +65,7 @@ class CartModel {
       categoryName: json['categoryName'],
       salePrice: json['salePrice'],
       fullPrice: json['fullPrice'],
-      productImages: json['productImages'],
+      productImages: List.from(json['productImages']), // Mengonversi ke List
       deliveryTime: json['deliveryTime'],
       isSale: json['isSale'],
       productDescription: json['productDescription'],

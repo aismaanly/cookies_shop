@@ -1,26 +1,29 @@
 // ignore_for_file: file_names
 
+// Deklarasi kelas OrderModel
 class OrderModel {
-  final String productId;
-  final String categoryId;
-  final String productName;
-  final String categoryName;
-  final String salePrice;
-  final String fullPrice;
-  final List productImages;
-  final String deliveryTime;
-  final bool isSale;
-  final String productDescription;
-  final dynamic createdAt;
-  final dynamic updatedAt;
-  final int productQuantity;
-  final double productTotalPrice;
-  final String customerId;
-  final bool status;
-  final String customerName;
-  final String customerPhone;
-  final String customerAddress;
+  // Deklarasi atribut-atribut dalam OrderModel
+  final String productId; // ID produk
+  final String categoryId; // ID kategori
+  final String productName; // Nama produk
+  final String categoryName; // Nama kategori
+  final String salePrice; // Harga setelah diskon produk
+  final String fullPrice; // Harga penuh produk
+  final List productImages; // Daftar gambar produk
+  final String deliveryTime; // Waktu pengiriman
+  final bool isSale; // Status apakah produk sedang dijual
+  final String productDescription; // Deskripsi produk
+  final dynamic createdAt; // Waktu pembuatan
+  final dynamic updatedAt; // Waktu pembaruan
+  final int productQuantity; // Jumlah produk
+  final double productTotalPrice; // Total harga produk
+  final String customerId; // ID pelanggan
+  final bool status; // Status pesanan
+  final String customerName; // Nama pelanggan
+  final String customerPhone; // Nomor telepon pelanggan
+  final String customerAddress; // Alamat pelanggan
 
+  // Konstruktor untuk menginisialisasi semua atribut
   OrderModel({
     required this.productId,
     required this.categoryId,
@@ -43,6 +46,7 @@ class OrderModel {
     required this.customerAddress,
   });
 
+  // Metode untuk mengonversi objek OrderModel menjadi map
   Map<String, dynamic> toMap() {
     return {
       'productId': productId,
@@ -67,6 +71,7 @@ class OrderModel {
     };
   }
 
+  // Factory constructor untuk membuat objek OrderModel dari map
   factory OrderModel.fromMap(Map<String, dynamic> json) {
     return OrderModel(
       productId: json['productId'],
