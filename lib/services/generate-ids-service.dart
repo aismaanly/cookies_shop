@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid.dart';//package untuk generate id
 
 // Kelas untuk menghasilkan ID unik untuk produk dan kategori
 class GenerateIds {

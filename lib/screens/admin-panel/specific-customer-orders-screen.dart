@@ -1,17 +1,18 @@
 // ignore_for_file: file_names, must_be_immutable, avoid_unnecessary_containers, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:cookies_shop/utils/app-constant.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../../models/order-model.dart';
-import 'check-single-order-screen.dart';
+import 'package:cookies_shop/utils/app-constant.dart'; // Import konstanta aplikasi
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore untuk database
+import 'package:flutter/cupertino.dart'; // Import Cupertino widgets
+import 'package:flutter/material.dart'; // Import material design widgets
+import 'package:get/get.dart'; // Import GetX untuk manajemen state
+import '../../models/order-model.dart'; // Import model OrderModel
+import 'check-single-order-screen.dart'; // Import halaman untuk memeriksa pesanan
 
-class SpecificCustomerOrderScreen extends StatelessWidget {
-  String docId;
-  String customerName;
-  SpecificCustomerOrderScreen({
+class SpecificCustomerOrderScreen extends StatelessWidget { // Kelas layar untuk menampilkan pesanan spesifik pelanggan
+  String docId; // ID dokumen pesanan
+  String customerName; // Nama pelanggan
+
+  SpecificCustomerOrderScreen({ // Konstruktor dengan parameter wajib
     super.key,
     required this.docId,
     required this.customerName,
@@ -19,58 +20,58 @@ class SpecificCustomerOrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: AppConstant.appScendoryColor),
-        centerTitle: true,
-        title: Text(
-          customerName,
-          style: TextStyle(
+    return Scaffold( // Widget utama sebagai kerangka layar
+      appBar: AppBar( // AppBar di bagian atas layar
+        iconTheme: IconThemeData(color: AppConstant.appScendoryColor), // Tema ikon
+        centerTitle: true, // Posisi judul di tengah
+        title: Text( // Teks judul
+          customerName, // Judul adalah nama pelanggan
+          style: TextStyle( // Gaya teks judul
             fontWeight: FontWeight.bold,
             color: AppConstant.appScendoryColor,
             fontSize: 20,
           ),
         ),
       ),
-      body: FutureBuilder(
-        future: FirebaseFirestore.instance
+      body: FutureBuilder( // Widget untuk membangun UI berdasarkan Future
+        future: FirebaseFirestore.instance // Future untuk mendapatkan data pesanan dari Firestore
             .collection('orders')
             .doc(docId)
             .collection('confirmOrders')
             .orderBy('createdAt', descending: true)
             .get(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return Container(
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) { // Builder untuk membangun UI berdasarkan status snapshot
+          if (snapshot.hasError) { // Jika terjadi error saat fetching data
+            return Container( // Tampilkan pesan error
               child: const Center(
                 child: Text('Error occurred while fetching orders!'),
               ),
             );
           }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Container(
+          if (snapshot.connectionState == ConnectionState.waiting) { // Saat data masih dalam proses fetching
+            return Container( // Tampilkan indikator loading
               child: const Center(
                 child: CupertinoActivityIndicator(),
               ),
             );
           }
-          if (snapshot.data!.docs.isEmpty) {
-            return Container(
+          if (snapshot.data!.docs.isEmpty) { // Jika tidak ada pesanan yang ditemukan
+            return Container( // Tampilkan pesan tidak ada pesanan
               child: const Center(
                 child: Text('No orders found!'),
               ),
             );
           }
 
-          if (snapshot.data != null) {
-            return ListView.builder(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              itemCount: snapshot.data!.docs.length,
-              itemBuilder: (context, index) {
-                final data = snapshot.data!.docs[index];
-                String orderDocId = data.id;
-                OrderModel orderModel = OrderModel(
+          if (snapshot.data != null) { // Jika ada data yang ditemukan
+            return ListView.builder( // ListView untuk menampilkan daftar pesanan
+              shrinkWrap: true, // Mengikat ListView sesuai dengan konten
+              physics: const BouncingScrollPhysics(), // Efek animasi saat scrolling
+              itemCount: snapshot.data!.docs.length, // Jumlah item berdasarkan data snapshot
+              itemBuilder: (context, index) { // Membangun setiap item di ListView
+                final data = snapshot.data!.docs[index]; // Data pesanan dari snapshot
+                String orderDocId = data.id; // ID dokumen pesanan
+                OrderModel orderModel = OrderModel( // Model OrderModel untuk data pesanan
                   categoryId: data['categoryId'],
                   categoryName: data['categoryName'],
                   createdAt: data['createdAt'],
@@ -92,36 +93,36 @@ class SpecificCustomerOrderScreen extends StatelessWidget {
                   updatedAt: data['updatedAt'],
                 );
 
-                return Card(
-                  elevation: 5,
-                  child: ListTile(
-                    onTap: () => Get.to(
+                return Card( // Widget Card untuk menampilkan setiap pesanan
+                  elevation: 5, // Elevasi bayangan di Card
+                  child: ListTile( // Widget ListTile untuk tampilan item pesanan
+                    onTap: () => Get.to( // Aksi saat item pesanan diklik untuk detail pesanan
                       () => CheckSingleOrderScreen(
                         docId: snapshot.data!.docs[index].id,
                         orderModel: orderModel,
                       ),
                     ),
-                    leading: CircleAvatar(
-                      backgroundColor: AppConstant.appMainColor,
-                      child: Text(
-                        orderModel.customerName[0],
-                        style: TextStyle(
+                    leading: CircleAvatar( // Avatar lingkaran di bagian kiri
+                      backgroundColor: AppConstant.appMainColor, // Warna latar belakang avatar
+                      child: Text( // Teks di dalam avatar
+                        orderModel.customerName[0], // Inisial nama pelanggan
+                        style: TextStyle( // Gaya teks inisial
                           color: AppConstant.appTextColor,
                           fontSize: 16,
                         ),
                       ),
                     ),
-                    title: Text(data['customerName']),
-                    subtitle: Text(orderModel.productName),
-                    trailing: GestureDetector(
+                    title: Text(data['customerName']), // Judul ListTile adalah nama pelanggan
+                    subtitle: Text(orderModel.productName), // Subjudul ListTile adalah nama produk
+                    trailing: GestureDetector( // Widget trailing dengan aksi onTap
                       onTap: () {
-                        showBottomSheet(
+                        showBottomSheet( // Menampilkan bottom sheet untuk mengubah status pesanan
                           userDocId: docId,
                           orderModel: orderModel,
                           orderDocId: orderDocId,
                         );
                       },
-                      child: Icon(Icons.edit),
+                      child: Icon(Icons.edit), // Ikon edit di trailing
                     ),
                   ),
                 );
@@ -129,36 +130,36 @@ class SpecificCustomerOrderScreen extends StatelessWidget {
             );
           }
 
-          return Container();
+          return Container(); // Kontainer kosong jika tidak ada data
         },
       ),
     );
   }
 
-  void showBottomSheet({
-    required String userDocId,
-    required OrderModel orderModel,
-    required String orderDocId,
+  void showBottomSheet({ // Metode untuk menampilkan bottom sheet
+    required String userDocId, // ID dokumen pengguna
+    required OrderModel orderModel, // Model OrderModel untuk pesanan
+    required String orderDocId, // ID dokumen pesanan
   }) {
-    Get.bottomSheet(
-      Container(
-        height: Get.height * 0.35,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20.0),
+    Get.bottomSheet( // Menampilkan bottom sheet dengan GetX
+      Container( // Kontainer bottom sheet
+        height: Get.height * 0.35, // Tinggi kontainer
+        decoration: BoxDecoration( // Dekorasi kontainer
+          color: Colors.white, // Warna latar belakang putih
+          borderRadius: BorderRadius.circular(20.0), // Border radius 20.0
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Column( // Kolom di dalam kontainer
+          mainAxisAlignment: MainAxisAlignment.center, // Posisi teks di tengah
+          crossAxisAlignment: CrossAxisAlignment.center, // Posisi teks di tengah
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Row( // Baris dalam kolom
+              mainAxisAlignment: MainAxisAlignment.center, // Posisi elemen di tengah
               children: [
-                Padding(
+                Padding( // Padding untuk tombol Pending
                   padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await FirebaseFirestore.instance
+                  child: ElevatedButton( // Tombol Elevated untuk Pending
+                    onPressed: () async { // Aksi saat tombol ditekan
+                      await FirebaseFirestore.instance // Mengubah status pesanan menjadi Pending di Firestore
                           .collection('orders')
                           .doc(userDocId)
                           .collection('confirmOrders')
@@ -167,30 +168,30 @@ class SpecificCustomerOrderScreen extends StatelessWidget {
                         'status': false,
                       });
 
-                      Get.back();
-                      Get.snackbar(
-                        "Order Status Updated",
-                        "Order set to Pending",
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: AppConstant.appScendoryColor,
-                        colorText: AppConstant.appTextColor,
+                      Get.back(); // Menutup bottom sheet setelah update
+                      Get.snackbar( // Menampilkan snackbar notifikasi
+                        "Order Status Updated", // Judul snackbar
+                        "Order set to Pending", // Pesan snackbar
+                        snackPosition: SnackPosition.BOTTOM, // Posisi snackbar di bawah
+                        backgroundColor: AppConstant.appScendoryColor, // Warna latar belakang snackbar
+                        colorText: AppConstant.appTextColor, // Warna teks snackbar
                       );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppConstant.appScendoryColor,
-                      padding: EdgeInsets.all(20.0),
+                    style: ElevatedButton.styleFrom( // Gaya tombol ElevatedButton
+                      backgroundColor: AppConstant.appScendoryColor, // Warna latar belakang tombol
+                      padding: EdgeInsets.all(20.0), // Padding tombol
                     ),
-                    child: Text(
-                      'Pending',
-                      style: TextStyle(color: Colors.white),
+                    child: Text( // Teks di dalam tombol
+                      'Pending', // Teks tombol untuk Pending
+                      style: TextStyle(color: Colors.white), // Warna teks putih
                     ),
                   ),
                 ),
-                Padding(
+                Padding( // Padding untuk tombol Delivered
                   padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await FirebaseFirestore.instance
+                  child: ElevatedButton( // Tombol Elevated untuk Delivered
+                    onPressed: () async { // Aksi saat tombol ditekan
+                      await FirebaseFirestore.instance // Mengubah status pesanan menjadi Delivered di Firestore
                           .collection('orders')
                           .doc(userDocId)
                           .collection('confirmOrders')
@@ -199,22 +200,22 @@ class SpecificCustomerOrderScreen extends StatelessWidget {
                         'status': true,
                       });
 
-                      Get.back();
-                      Get.snackbar(
-                        "Order Status Updated",
-                        "Order set to Delivered",
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: AppConstant.appScendoryColor,
-                        colorText: AppConstant.appTextColor,
+                      Get.back(); // Menutup bottom sheet setelah update
+                      Get.snackbar( // Menampilkan snackbar notifikasi
+                        "Order Status Updated", // Judul snackbar
+                        "Order set to Delivered", // Pesan snackbar
+                        snackPosition: SnackPosition.BOTTOM, // Posisi snackbar di bawah
+                        backgroundColor: AppConstant.appScendoryColor, // Warna latar belakang snackbar
+                        colorText: AppConstant.appTextColor, // Warna teks snackbar
                       );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppConstant.appScendoryColor,
-                      padding: EdgeInsets.all(20.0),
+                    style: ElevatedButton.styleFrom( // Gaya tombol ElevatedButton
+                      backgroundColor: AppConstant.appScendoryColor, // Warna latar belakang tombol
+                      padding: EdgeInsets.all(20.0), // Padding tombol
                     ),
-                    child: Text(
-                      'Delivered',
-                      style: TextStyle(color: Colors.white),
+                    child: Text( // Teks di dalam tombol
+                      'Delivered', // Teks tombol untuk Delivered
+                      style: TextStyle(color: Colors.white), // Warna teks putih
                     ),
                   ),
                 )

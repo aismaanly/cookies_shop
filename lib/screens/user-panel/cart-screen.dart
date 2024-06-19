@@ -1,14 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cookies_shop/models/cart-model.dart';
-import 'package:cookies_shop/utils/app-constant.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_swipe_action_cell/core/cell.dart';
-import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase Firestore untuk database.
+import 'package:cookies_shop/models/cart-model.dart'; // Model untuk data keranjang.
+import 'package:cookies_shop/utils/app-constant.dart'; // Konstanta aplikasi.
+import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication untuk otentikasi pengguna.
+import 'package:flutter/cupertino.dart'; // Widget Cupertino untuk gaya iOS.
+import 'package:flutter/material.dart'; // Framework Flutter.
+import 'package:flutter_swipe_action_cell/core/cell.dart'; // Widget swipe action cell untuk aksi swipe pada list.
+import 'package:get/get.dart'; // Manajemen state dengan GetX.
 
-import '../../controllers/cart-price-controller.dart';
-import 'checkout-screen.dart';
+import '../../controllers/cart-price-controller.dart'; // Controller untuk harga produk di keranjang.
+import 'checkout-screen.dart'; // Layar checkout untuk proses pembayaran.
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -18,9 +18,9 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  User? user = FirebaseAuth.instance.currentUser;
+  User? user = FirebaseAuth.instance.currentUser; // Mendapatkan pengguna saat ini.
   final ProductPriceController productPriceController =
-      Get.put(ProductPriceController());
+      Get.put(ProductPriceController()); // Controller untuk harga produk.
 
   Future<void> deleteProduct(String productId) async {
     await FirebaseFirestore.instance
@@ -28,7 +28,7 @@ class _CartScreenState extends State<CartScreen> {
         .doc(user!.uid)
         .collection('cartOrders')
         .doc(productId)
-        .delete();
+        .delete(); // Menghapus produk dari keranjang.
 
     // Periksa apakah keranjang kosong setelah penghapusan
     var snapshot = await FirebaseFirestore.instance
@@ -38,7 +38,7 @@ class _CartScreenState extends State<CartScreen> {
         .get();
 
     if (snapshot.docs.isEmpty) {
-      productPriceController.totalPrice.value = 0;
+      productPriceController.totalPrice.value = 0; // Setel harga total ke 0 jika keranjang kosong.
     }
   }
 
@@ -46,14 +46,14 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: AppConstant.appScendoryColor),
-        centerTitle: true,
+        iconTheme: IconThemeData(color: AppConstant.appScendoryColor), // Tema ikon untuk app bar.
+        centerTitle: true, // Pusatkan judul di app bar.
         title: Text(
-          "Cart",
+          "Cart", // Teks judul.
           style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: AppConstant.appScendoryColor,
-              fontSize: 20),
+              fontWeight: FontWeight.bold, // Ketebalan teks tebal.
+              color: AppConstant.appScendoryColor, // Warna teks judul.
+              fontSize: 20), // Ukuran font judul.
         ),
       ),
       body: StreamBuilder(
@@ -61,25 +61,25 @@ class _CartScreenState extends State<CartScreen> {
             .collection('cart')
             .doc(user!.uid)
             .collection('cartOrders')
-            .snapshots(),
+            .snapshots(), // Stream untuk mendapatkan data keranjang.
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return Center(
-              child: Text("Error"),
+              child: Text("Error"), // Tampilkan teks "Error" jika terjadi kesalahan.
             );
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Container(
               height: Get.height / 5,
               child: Center(
-                child: CupertinoActivityIndicator(),
+                child: CupertinoActivityIndicator(), // Indikator aktivitas jika sedang memuat.
               ),
             );
           }
 
           if (snapshot.data!.docs.isEmpty) {
             return Center(
-              child: Text("No products found!"),
+              child: Text("No products found!"), // Tampilkan teks "No products found!" jika tidak ada produk.
             );
           }
 
@@ -109,51 +109,51 @@ class _CartScreenState extends State<CartScreen> {
                         productData['productTotalPrice'].toString()),
                   );
 
-                  //calculate price
+                  // Menghitung harga produk
                   productPriceController.fetchProductPrice();
                   return SwipeActionCell(
                     key: ObjectKey(cartModel.productId),
                     trailingActions: [
                       SwipeAction(
-                        title: "Delete",
+                        title: "Delete", // Judul aksi hapus.
                         forceAlignmentToBoundary: true,
                         performsFirstActionWithFullSwipe: true,
                         onTap: (CompletionHandler handler) async {
                           await Get.defaultDialog(
-                            title: "Remove Product",
+                            title: "Remove Product", // Judul dialog hapus produk.
                             content: const Text(
-                                "Are you sure you want to remove this product from your cart?"),
-                            textCancel: "Cancel",
-                            textConfirm: "Delete",
+                                "Are you sure you want to remove this product from your cart?"), // Konten dialog.
+                            textCancel: "Cancel", // Teks tombol batal.
+                            textConfirm: "Delete", // Teks tombol hapus.
                             contentPadding: const EdgeInsets.all(10.0),
                             confirmTextColor: Colors.white,
-                            onCancel: () {},
+                            onCancel: () {}, // Aksi ketika tombol batal ditekan.
                             onConfirm: () async {
                               Get.back();
-                              await deleteProduct(cartModel.productId);
+                              await deleteProduct(cartModel.productId); // Hapus produk dari keranjang.
                             },
-                            buttonColor: Colors.red,
-                            cancelTextColor: Colors.black,
+                            buttonColor: Colors.red, // Warna tombol hapus.
+                            cancelTextColor: Colors.black, // Warna teks tombol batal.
                           );
                         },
-                        color: Colors.red,
+                        color: Colors.red, // Warna aksi hapus.
                       ),
                     ],
                     child: Card(
                       elevation: 5,
-                      color: AppConstant.appCardColor,
+                      color: AppConstant.appCardColor, // Warna latar belakang kartu.
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
+                        borderRadius: BorderRadius.circular(15.0), // Bentuk kartu dengan sudut melengkung.
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Row(
                           children: [
                             CircleAvatar(
-                              backgroundColor: AppConstant.appMainColor,
+                              backgroundColor: AppConstant.appMainColor, // Warna latar belakang avatar.
                               backgroundImage:
-                                  NetworkImage(cartModel.productImages[0]),
-                              radius: 30,
+                                  NetworkImage(cartModel.productImages[0]), // Gambar produk di avatar.
+                              radius: 30, // Radius avatar.
                             ),
                             SizedBox(width: 10),
                             Expanded(
@@ -171,7 +171,7 @@ class _CartScreenState extends State<CartScreen> {
                                     "Rp.${cartModel.productTotalPrice.toString()}",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.brown,
+                                      color: Colors.brown, // Warna teks harga produk.
                                     ),
                                   ),
                                 ],
@@ -180,7 +180,7 @@ class _CartScreenState extends State<CartScreen> {
                             Row(
                               children: [
                                 IconButton(
-                                  icon: Icon(Icons.remove_circle_outline),
+                                  icon: Icon(Icons.remove_circle_outline), // Ikon kurangi produk.
                                   onPressed: () async {
                                     if (cartModel.productQuantity > 1) {
                                       await FirebaseFirestore.instance
@@ -190,43 +190,43 @@ class _CartScreenState extends State<CartScreen> {
                                           .doc(cartModel.productId)
                                           .update({
                                         'productQuantity':
-                                            cartModel.productQuantity - 1,
+                                            cartModel.productQuantity - 1, // Kurangi jumlah produk.
                                         'productTotalPrice':
                                             (double.parse(cartModel.fullPrice) *
                                                 (cartModel.productQuantity - 1))
                                       });
                                     } else {
                                       await Get.defaultDialog(
-                                        title: "Remove Product",
+                                        title: "Remove Product", // Judul dialog hapus produk.
                                         content: const Text(
-                                            "Are you sure you want to remove this product from your cart?"),
-                                        textCancel: "Cancel",
-                                        textConfirm: "Remove",
+                                            "Are you sure you want to remove this product from your cart?"), // Konten dialog.
+                                        textCancel: "Cancel", // Teks tombol batal.
+                                        textConfirm: "Remove", // Teks tombol hapus.
                                         contentPadding:
                                             const EdgeInsets.all(10.0),
                                         confirmTextColor: Colors.white,
                                         buttonColor: Colors.red,
                                         cancelTextColor: Colors.black,
-                                        onCancel: () {},
+                                        onCancel: () {}, // Aksi ketika tombol batal ditekan.
                                         onConfirm: () async {
                                           Get.back();
                                           await deleteProduct(
-                                              cartModel.productId);
+                                              cartModel.productId); // Hapus produk dari keranjang.
                                         },
                                       );
                                     }
                                   },
-                                  color: AppConstant.appScendoryColor,
+                                  color: AppConstant.appScendoryColor, // Warna ikon kurangi produk.
                                 ),
                                 Text(
-                                  cartModel.productQuantity.toString(),
+                                  cartModel.productQuantity.toString(), // Teks jumlah produk.
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
                                   ),
                                 ),
                                 IconButton(
-                                  icon: Icon(Icons.add_circle_outline),
+                                  icon: Icon(Icons.add_circle_outline), // Ikon tambah produk.
                                   onPressed: () async {
                                     await FirebaseFirestore.instance
                                         .collection('cart')
@@ -235,13 +235,13 @@ class _CartScreenState extends State<CartScreen> {
                                         .doc(cartModel.productId)
                                         .update({
                                       'productQuantity':
-                                          cartModel.productQuantity + 1,
+                                          cartModel.productQuantity + 1, // Tambah jumlah produk.
                                       'productTotalPrice':
                                           double.parse(cartModel.fullPrice) *
                                               (cartModel.productQuantity + 1)
                                     });
                                   },
-                                  color: AppConstant.appScendoryColor,
+                                  color: AppConstant.appScendoryColor, // Warna ikon tambah produk.
                                 ),
                               ],
                             ),
@@ -255,7 +255,7 @@ class _CartScreenState extends State<CartScreen> {
             );
           }
 
-          return Container();
+          return Container(); // Return container kosong jika tidak ada data.
         },
       ),
       bottomNavigationBar: Container(
@@ -267,7 +267,7 @@ class _CartScreenState extends State<CartScreen> {
                 () => Padding(
                   padding: const EdgeInsets.only(left: 15.0),
                   child: Text(
-                    "Total : ${productPriceController.totalPrice.value.toStringAsFixed(0)}",
+                    "Total : ${productPriceController.totalPrice.value.toStringAsFixed(0)}", // Teks total harga produk di keranjang.
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18.0,
@@ -283,19 +283,19 @@ class _CartScreenState extends State<CartScreen> {
                   width: Get.width / 2.0,
                   height: Get.height / 18,
                   decoration: BoxDecoration(
-                    color: AppConstant.appScendoryColor,
+                    color: AppConstant.appScendoryColor, // Warna latar belakang tombol Checkout.
                     borderRadius: BorderRadius.circular(20.0),
                   ),
                   child: TextButton(
                     child: Text(
-                      "Checkout",
+                      "Checkout", // Teks tombol Checkout.
                       style: TextStyle(
-                        color: AppConstant.appTextColor,
+                        color: AppConstant.appTextColor, // Warna teks tombol Checkout.
                         fontSize: 18.0,
                       ),
                     ),
                     onPressed: () {
-                      Get.to(() => CheckOutScreen());
+                      Get.to(() => CheckOutScreen()); // Pindah ke layar Checkout.
                     },
                   ),
                 ),
