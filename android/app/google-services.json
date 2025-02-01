@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "848195301579",
+    "project_id": "cookiesshop-be8f9",
+    "storage_bucket": "cookiesshop-be8f9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848195301579:android:998051638959404aabeb4e",
+        "android_client_info": {
+          "package_name": "com.example.cookies_shop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjldUOT209t2YdZlj2qYgh_hoRFJp98tI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
