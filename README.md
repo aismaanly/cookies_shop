@@ -1,5 +1,5 @@
 # Cookies Shop: A Flutter-Based E-Commerce Solution for Effortless Cookie Shopping 🍪📱
-![Application](image/thumb.png)
+![Application](images/thumb.png)
 
 **Cookies Shop** is an e-commerce application developed using Flutter SDK and Firebase to meet the growing demand for a more practical and efficient way to purchase high-quality cookies. This app is designed as a digital solution to help users easily browse, select, and order various types of cookies from multiple brands without the need to visit physical stores.
 
